@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"regexp"
 )
 
 func main() {
+	// $[\\.[w+]\\]
 	// $.abc.def[2]
 	// support linux pipe
 	fileFlag := flag.String("file", "", "JSON File")
@@ -42,4 +44,20 @@ func main() {
 
 	fmt.Println(result["key2"])
 	fmt.Println(reflect.TypeOf(result["key2"]))
+
+	input := "$.abc.def[13]"
+
+	matched := validatePattern(input)
+
+	fmt.Println("Matched:", matched) // Output: Matched: true
+}
+
+func validatePattern(s string) bool {
+	pattern := "^\\$(\\.\\w+(\\[\\d+\\])?)+$"
+	matched, err := regexp.MatchString(pattern, s)
+	if err != nil {
+		return false
+	}
+
+	return matched
 }
