@@ -33,6 +33,26 @@ func main() {
 	t2 := dat["key2"].(float64)
 	fmt.Println(t2)
 
+	pattern := "$.key1"
+	if !validatePattern(pattern) {
+		panic("invalid pattern")
+	}
+
+	data := dat
+	s := strings.TrimPrefix(pattern, "$.")
+	parts := strings.Split(s, ".")
+	for _, part := range parts {
+		key := part
+		if strings.HasSuffix(part, "]") {
+			key = string(part[0:len(part) - 3])
+		}
+	
+		// parse data
+		data = (data[key]).(map[string]interface{})
+	}
+
+	fmt.Println(data)
+
 	var result map[string]interface{}
 	decoder := json.NewDecoder(bytes.NewReader(byt))
 	decoder.UseNumber() // 使用 UseNumber(),保留float64精度
