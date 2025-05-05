@@ -1,13 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
-	"reflect"
 	"regexp"
+	"strings"
 )
 
 func main() {
@@ -27,49 +26,39 @@ func main() {
 	if err = json.Unmarshal(byt, &dat); err != nil {
 		panic(err)
 	}
-	s1 := dat["key1"].(string)
-	fmt.Println(s1)
 
-	t2 := dat["key2"].(float64)
-	fmt.Println(t2)
-
-	pattern := "$.key1"
+	pattern := "$.key3"
 	if !validatePattern(pattern) {
 		panic("invalid pattern")
 	}
 
-	data := dat
+	var data interface{}
+	data = dat
 	s := strings.TrimPrefix(pattern, "$.")
 	parts := strings.Split(s, ".")
 	for _, part := range parts {
 		key := part
+		// index := -1
 		if strings.HasSuffix(part, "]") {
 			key = string(part[0:len(part) - 3])
+			// index = 
 		}
 	
 		// parse data
-		data = (data[key]).(map[string]interface{})
+		data = (data.(map[string]interface{}))[key]
 	}
 
 	fmt.Println(data)
 
-	var result map[string]interface{}
-	decoder := json.NewDecoder(bytes.NewReader(byt))
-	decoder.UseNumber() // 使用 UseNumber(),保留float64精度
+	// var result map[string]interface{}
+	// decoder := json.NewDecoder(bytes.NewReader(byt))
+	// decoder.UseNumber() // 使用 UseNumber(),保留float64精度
 
-	err = decoder.Decode(&result)
-	if err != nil {
-		panic(err)
-	}
+	// err = decoder.Decode(&result)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	fmt.Println(result["key2"])
-	fmt.Println(reflect.TypeOf(result["key2"]))
-
-	input := "$.abc.def[13]"
-
-	matched := validatePattern(input)
-
-	fmt.Println("Matched:", matched) // Output: Matched: true
 }
 
 func validatePattern(s string) bool {

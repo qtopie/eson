@@ -1,3 +1,3 @@
 module github.com/qtopie/eson
 
-go 1.24.1
+go 1.22.4
